@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 public class MessageReceiveListener extends ListenerAdapter {
 
@@ -32,35 +31,45 @@ public class MessageReceiveListener extends ListenerAdapter {
             return;
         }
         final String content = event.getMessage().getContentRaw();
+        System.out.println(content);
         if (content.split(" ").length > 1) {
-            final Matcher matcher = MENTION_PATTERN.matcher(content.split(" ")[0]);
+            final Matcher matcher = MENTION_PATTERN.matcher(content.split(" ")[0].trim());
+            System.out.println(":" + content.split(" ")[0].trim() + ":");
+            System.out.println(matcher.matches());
+            System.out.println(matcher.group(1));
+            System.out.println(content.split(" ")[1]);
+            System.out.println(bot.getJDA().getSelfUser().getId());
+            System.out.println(matcher.group(1).equals(bot.getJDA().getSelfUser().getId()));
+
             if (matcher.matches() && matcher.group(1).equals(bot.getJDA().getSelfUser().getId())) {
                 final String[] arguments = content.split(" ");
+                System.out.println("abfahrt");
                 switch (arguments[1].toLowerCase()) {
                     case "pib", "pi", "praktische", "praktisch" -> addRole(event.getChannel(), event.getMember(),
                             event.getGuild().getRolesByName("Praktische Informatik", true).get(0));
-                    case "kib", "ki", "kommunikation", "kommunikations" -> addRole(event.getChannel(), event.getMember(),
+                    case "kib", "ki", "kommunikation", "kommunikations" -> addRole(event.getChannel(),
+                            event.getMember(),
                             event.getGuild().getRolesByName("Kommunikationsinformatik", true).get(0));
                 }
             }
+
         }
     }
 
     private void addRole(final TextChannel textChannel, Member member, final Role role) {
-        if (PermissionUtil.canInteract(member, role)) {
-            final EmbedBuilder embedBuilder = DiscordUtils.getDefaultEmbed(member);
-            if (member.getRoles().contains(role)) {
-                member.getGuild().removeRoleFromMember(member, role).queue(success -> {
-                    embedBuilder.appendDescription("Du hast die Rolle " + role.getName() + " verlassen");
-                    textChannel.sendMessage(embedBuilder.build()).queue();
+        final EmbedBuilder embedBuilder = DiscordUtils.getDefaultEmbed(member);
+        if (member.getRoles().contains(role)) {
+            member.getGuild().removeRoleFromMember(member, role).queue(success -> {
+                embedBuilder.appendDescription("Du hast die Rolle " + role.getName() + " verlassen");
+                textChannel.sendMessage(embedBuilder.build()).queue();
 
-                });
-            } else {
-                member.getGuild().addRoleToMember(member, role).queue(success -> {
-                    embedBuilder.appendDescription("Du hast jetzt die Rolle " + role.getName());
-                    textChannel.sendMessage(embedBuilder.build()).queue();
-                });
-            }
+            });
+        } else {
+            System.out.println("moin");
+            member.getGuild().addRoleToMember(member, role).queue(success -> {
+                embedBuilder.appendDescription("Du hast jetzt die Rolle " + role.getName());
+                textChannel.sendMessage(embedBuilder.build()).queue();
+            });
         }
     }
 

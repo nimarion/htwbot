@@ -39,7 +39,7 @@ public class HtwBot {
     }
 
     private JDA initJDA(final String token) throws Exception {
-        JDABuilder builder = JDABuilder.createLight(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS);
+        JDABuilder builder = JDABuilder.createDefault(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS);
 
         try {
             return builder.build().awaitReady();
