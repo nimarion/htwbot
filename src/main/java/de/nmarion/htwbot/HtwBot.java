@@ -10,6 +10,7 @@ import de.nmarion.htwbot.listener.message.MessageReceiveListener;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class HtwBot {
 
@@ -38,7 +39,7 @@ public class HtwBot {
     }
 
     private JDA initJDA(final String token) throws Exception {
-        JDABuilder builder = JDABuilder.createDefault(token);
+        JDABuilder builder = JDABuilder.createLight(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS);
 
         try {
             return builder.build().awaitReady();
