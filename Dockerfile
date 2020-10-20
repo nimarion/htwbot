@@ -4,6 +4,6 @@ COPY pom.xml /usr/src/app
 RUN mvn -f /usr/src/app/pom.xml clean package -Dmaven.test.skip=true
 
 FROM openjdk:15-jdk-slim
-COPY --from=build /usr/src/app/target/c0debase-*-SNAPSHOT-shaded.jar htwbot.jar
+COPY --from=build /usr/src/app/target/htwbot-*-SNAPSHOT-shaded.jar htwbot.jar
 
 ENTRYPOINT ["java", "-jar", "htwbot.jar"]
