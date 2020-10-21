@@ -10,11 +10,17 @@ public class Configuration {
     public static final String DISCORD_TOKEN;
     public static final String DISCORD_PREFIX;
 
+    public static final String JDOODLE_CLIEN_ID;
+    public static final String JDOODLE_CLIENT_SECRET;
+
+
     static {
         final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
         DISCORD_TOKEN = getenv("DISCORD_TOKEN", dotenv);
         DISCORD_PREFIX = getenv("DISCORD_PREFIX", dotenv);
+        JDOODLE_CLIEN_ID = getenv("JDOODLE_CLIEN_ID", dotenv);
+        JDOODLE_CLIENT_SECRET = getenv("JDOODLE_CLIENT_SECRET", dotenv);
 
         try {
             checkNull();

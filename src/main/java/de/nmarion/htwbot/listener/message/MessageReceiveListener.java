@@ -31,19 +31,11 @@ public class MessageReceiveListener extends ListenerAdapter {
             return;
         }
         final String content = event.getMessage().getContentRaw();
-        System.out.println(content);
         if (content.split(" ").length > 1) {
             final Matcher matcher = MENTION_PATTERN.matcher(content.split(" ")[0].trim());
-            System.out.println(":" + content.split(" ")[0].trim() + ":");
-            System.out.println(matcher.matches());
-            System.out.println(matcher.group(1));
-            System.out.println(content.split(" ")[1]);
-            System.out.println(bot.getJDA().getSelfUser().getId());
-            System.out.println(matcher.group(1).equals(bot.getJDA().getSelfUser().getId()));
 
             if (matcher.matches() && matcher.group(1).equals(bot.getJDA().getSelfUser().getId())) {
                 final String[] arguments = content.split(" ");
-                System.out.println("abfahrt");
                 switch (arguments[1].toLowerCase()) {
                     case "pib", "pi", "praktische", "praktisch" -> addRole(event.getChannel(), event.getMember(),
                             event.getGuild().getRolesByName("Praktische Informatik", true).get(0));
@@ -65,7 +57,6 @@ public class MessageReceiveListener extends ListenerAdapter {
 
             });
         } else {
-            System.out.println("moin");
             member.getGuild().addRoleToMember(member, role).queue(success -> {
                 embedBuilder.appendDescription("Du hast jetzt die Rolle " + role.getName());
                 textChannel.sendMessage(embedBuilder.build()).queue();
