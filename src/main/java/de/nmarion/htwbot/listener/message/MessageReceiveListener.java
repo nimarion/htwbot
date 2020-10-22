@@ -1,5 +1,6 @@
 package de.nmarion.htwbot.listener.message;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,8 +36,9 @@ public class MessageReceiveListener extends ListenerAdapter {
             final Matcher matcher = MENTION_PATTERN.matcher(content.split(" ")[0].trim());
 
             if (matcher.matches() && matcher.group(1).equals(bot.getJDA().getSelfUser().getId())) {
-                final String[] arguments = content.split(" ");
-                switch (arguments[1].toLowerCase()) {
+                final String[] splittedContent = content.trim().split("\\s* \\s*");
+                final String[] arguments = Arrays.copyOfRange(splittedContent, 1, splittedContent.length);
+                switch (arguments[0].toLowerCase()) {
                     case "pib", "pi", "praktische", "praktisch" -> addRole(event.getChannel(), event.getMember(),
                             event.getGuild().getRolesByName("Praktische Informatik", true).get(0));
                     case "kib", "ki", "kommunikation", "kommunikations" -> addRole(event.getChannel(),
@@ -44,7 +46,6 @@ public class MessageReceiveListener extends ListenerAdapter {
                             event.getGuild().getRolesByName("Kommunikationsinformatik", true).get(0));
                 }
             }
-
         }
     }
 
