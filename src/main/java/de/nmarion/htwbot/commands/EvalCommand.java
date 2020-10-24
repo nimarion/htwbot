@@ -13,6 +13,7 @@ import de.nmarion.htwbot.utils.DiscordUtils;
 import de.nmarion.htwbot.utils.Language;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -42,7 +43,12 @@ public class EvalCommand extends Command {
                 final EmbedBuilder embedBuilder = DiscordUtils.getDefaultEmbed(message.getMember());
                 if (response != null) {
                     JsonObject jsonObject = Constants.GSON.fromJson(response, JsonObject.class);
-                    embedBuilder.appendDescription("```" + jsonObject.get("output").getAsString() + "```");
+                    final String description = "```" + jsonObject.get("output").getAsString() + "```";
+                    if(description.length() < MessageEmbed.TEXT_MAX_LENGTH){
+                        embedBuilder.appendDescription(description);    
+                    } else {
+                        embedBuilder.appendDescription("Ausgabe ist zu groß!\n Discord erlaubt maximal " + MessageEmbed.TEXT_MAX_LENGTH + " Zeichen");
+                    }
                 } else {
                     embedBuilder.appendDescription("Es gab einen Fehler");
                 }
@@ -62,7 +68,8 @@ public class EvalCommand extends Command {
         hashMap.put("versionIndex", language.getCode());
 
         final Request request = new Request.Builder().url("https://api.jdoodle.com/v1/execute")
-                .method("POST", RequestBody.create(MediaType.parse("application/json"), Constants.GSON.toJson(hashMap))).build();
+                .method("POST", RequestBody.create(MediaType.parse("application/json"), Constants.GSON.toJson(hashMap)))
+                .build();
         final Response response = httpClient.newCall(request).execute();
         if (response.code() != 200) {
             return null;
