@@ -70,7 +70,15 @@ public class MessageReceiveListener extends ListenerAdapter {
         if (event.getAuthor().isBot()) {
             return;
         }
-        event.getChannel().sendMessage(":wave:").queue();
+        final Role piRole = bot.getGuild().getRolesByName("Praktische Informatik", true).get(0);
+        final Role kiRole = bot.getGuild().getRolesByName("Kommunikationsinformatik", true).get(0);
+        final Member member = bot.getGuild().getMember(event.getAuthor());
+        if (member.getRoles().contains(piRole) || member.getRoles().contains(kiRole)) {
+            event.getChannel().sendMessage(":wave:").queue();
+        } else {
+            event.getChannel().sendMessage("WIP :construction_worker:").queue();
+        }
+        
     }
 
 }

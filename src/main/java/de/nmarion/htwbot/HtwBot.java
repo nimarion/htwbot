@@ -16,6 +16,7 @@ import de.nmarion.htwbot.tempchannel.Tempchannel;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class HtwBot {
@@ -69,6 +70,10 @@ public class HtwBot {
 
     public Map<String, Tempchannel> getTempchannels() {
         return tempchannels;
+    }
+
+    public Guild getGuild(){
+        return jda.getGuilds().get(0);
     }
 
     public static void main(String[] args) {
