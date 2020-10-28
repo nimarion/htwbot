@@ -1,5 +1,6 @@
 package de.nmarion.htwbot.commands;
 
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,7 +50,9 @@ public class VerifyCommand extends Command {
                 embedBuilder.setDescription("!verify pib/ki.vorname.nachname@htw-saarland.de");
             }
         }
-        message.getTextChannel().sendMessage(embedBuilder.build()).queue();
+        message.getTextChannel().sendMessage(embedBuilder.build()).queue(success -> {
+            success.delete().queueAfter(20, TimeUnit.SECONDS);
+        });
     }
 
     private String sendMail(final Member member, final String mail) {
