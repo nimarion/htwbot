@@ -2,6 +2,7 @@ package de.nmarion.htwbot;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.login.LoginException;
 
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.nmarion.htwbot.commands.CommandManager;
+import de.nmarion.htwbot.commands.VerifyCommand.VerifyPerson;
 import de.nmarion.htwbot.listener.message.MessageReceiveListener;
 import de.nmarion.htwbot.listener.other.GuildReadyListener;
 import de.nmarion.htwbot.listener.voice.GuildVoiceListener;
@@ -17,7 +19,10 @@ import io.sentry.Sentry;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 
 public class HtwBot {
 
@@ -26,12 +31,15 @@ public class HtwBot {
     private final JDA jda;
     private final CommandManager commandManager;
     private final Map<String, Tempchannel> tempchannels;
+    private final Map<Member, VerifyPerson> verifyCodes;
 
     public HtwBot() throws Exception {
         final long startTime = System.currentTimeMillis();
         logger.info("Starting htwbot");
 
         tempchannels = new HashMap<>();
+        this.verifyCodes= ExpiringMap.builder().expiration(15, TimeUnit.MINUTES)
+                .expirationPolicy(ExpirationPolicy.ACCESSED).build();
 
         jda = initJDA(Configuration.DISCORD_TOKEN);
         logger.info("JDA set up!");
@@ -50,7 +58,7 @@ public class HtwBot {
     }
 
     private JDA initJDA(final String token) throws Exception {
-        JDABuilder builder = JDABuilder.createDefault(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_VOICE_STATES);
+        JDABuilder builder = JDABuilder.createDefault(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.DIRECT_MESSAGES);
         builder.addEventListeners(new GuildReadyListener(this));
 
         try {
@@ -74,6 +82,10 @@ public class HtwBot {
 
     public Guild getGuild(){
         return jda.getGuilds().get(0);
+    }
+
+    public Map<Member, VerifyPerson> getVerifyCodes(){
+        return verifyCodes;
     }
 
     public static void main(String[] args) {

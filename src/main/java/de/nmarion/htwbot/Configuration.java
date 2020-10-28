@@ -12,7 +12,9 @@ public class Configuration {
 
     public static final String JDOODLE_CLIEN_ID;
     public static final String JDOODLE_CLIENT_SECRET;
-
+    public static final String MAIL_ADDRESS;
+    public static final String MAIL_PASSWORD;
+    public static final String MAIL_HOSTNAME;
 
     static {
         final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
@@ -21,6 +23,9 @@ public class Configuration {
         DISCORD_PREFIX = getenv("DISCORD_PREFIX", dotenv);
         JDOODLE_CLIEN_ID = getenv("JDOODLE_CLIENT_ID", dotenv);
         JDOODLE_CLIENT_SECRET = getenv("JDOODLE_CLIENT_SECRET", dotenv);
+        MAIL_ADDRESS = getenv("MAIL_ADDRESS", dotenv);
+        MAIL_PASSWORD = getenv("MAIL_PASSWORD", dotenv);
+        MAIL_HOSTNAME = getenv("MAIL_HOSTNAME", dotenv);
 
         try {
             checkNull();

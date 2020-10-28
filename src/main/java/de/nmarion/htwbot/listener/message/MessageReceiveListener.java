@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.nmarion.htwbot.HtwBot;
+import de.nmarion.htwbot.commands.VerifyCommand.VerifyPerson;
 import de.nmarion.htwbot.utils.DiscordUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -72,13 +73,29 @@ public class MessageReceiveListener extends ListenerAdapter {
         }
         final Role piRole = bot.getGuild().getRolesByName("Praktische Informatik", true).get(0);
         final Role kiRole = bot.getGuild().getRolesByName("Kommunikationsinformatik", true).get(0);
-        final Member member = bot.getGuild().getMember(event.getAuthor());
-        if (member.getRoles().contains(piRole) || member.getRoles().contains(kiRole)) {
-            event.getChannel().sendMessage(":wave:").queue();
-        } else {
-            event.getChannel().sendMessage("WIP :construction_worker:").queue();
-        }
-        
+        bot.getGuild().retrieveMember(event.getAuthor()).queue(member -> {
+            if (member.getRoles().contains(piRole) || member.getRoles().contains(kiRole)) {
+                event.getChannel().sendMessage(":wave:").queue();
+            } else {
+                if (bot.getVerifyCodes().containsKey(member)) {
+                    final VerifyPerson verifyPerson = bot.getVerifyCodes().get(member);
+                    if (event.getMessage().getContentRaw().equals(verifyPerson.getRandomCode().toString())) {
+                        member.getGuild()
+                                .addRoleToMember(member, verifyPerson.getMail().startsWith("ki") ? kiRole : piRole)
+                                .queue(success -> {
+                                    event.getChannel().sendMessage("Du hast jetzt die Rolle " + (verifyPerson.getMail().startsWith("ki") ? kiRole.getName() : piRole.getName())).queue();;
+                                    bot.getVerifyCodes().remove(member);
+                                });
+                    } else {
+                        event.getChannel().sendMessage("Bitte überprüfe deinen Code!").queue();
+                    }
+                } else {
+                    event.getChannel().sendMessage(
+                            "Mit !verify pib/ki.vorname.nachname@htw-saarland.de kannst du auf dem **Server** die Verifizierung starten.")
+                            .queue();
+                }
+            }
+        });
     }
 
 }
