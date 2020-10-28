@@ -45,6 +45,8 @@ public class MessageReceiveListener extends ListenerAdapter {
                 }
             } catch (NumberFormatException exception) {
                 return;
+            } finally {
+                event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
             }
         }
     }

@@ -52,6 +52,7 @@ public class VerifyCommand extends Command {
         }
         message.getTextChannel().sendMessage(embedBuilder.build()).queue(success -> {
             success.delete().queueAfter(20, TimeUnit.SECONDS);
+            message.delete().queueAfter(10, TimeUnit.SECONDS);
         });
     }
 
