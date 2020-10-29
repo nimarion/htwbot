@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
@@ -33,10 +34,14 @@ public class Tempchannel implements TempchannelEvents {
             return;
         }
         if (textChannel == null) {
+            final Role piRole = member.getGuild().getRolesByName("Praktische Informatik", true).get(0);
+            final Role kiRole = member.getGuild().getRolesByName("Kommunikationsinformatik", true).get(0);
             final Guild guild = voiceChannel.getGuild();
             voiceChannel.getParent().createTextChannel("temp-" + voiceChannel.getName().toLowerCase())
                     .addPermissionOverride(guild.getSelfMember(), MEMBER_PERMISSIONS, null)
                     .addPermissionOverride(member, MEMBER_PERMISSIONS, null)
+                    .addPermissionOverride(piRole, null, MEMBER_PERMISSIONS)
+                    .addPermissionOverride(kiRole, null, MEMBER_PERMISSIONS)
                     .addPermissionOverride(guild.getPublicRole(), null, MEMBER_PERMISSIONS)
                     .queue(channel -> setTextChannel((TextChannel) channel));
         } else {
@@ -60,7 +65,7 @@ public class Tempchannel implements TempchannelEvents {
         if (voiceChannel.equals(voiceChannel.getGuild().getAfkChannel())) {
             return;
         }
-        if(textChannel == null){
+        if (textChannel == null) {
             return;
         }
         if (voiceChannel.getMembers().isEmpty()) {
