@@ -46,7 +46,7 @@ public class CommandManager extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(final GuildMessageReceivedEvent event) {
-        if (event.getAuthor().isBot()) {
+        if (event.getAuthor().isBot() || event.getMember().getRoles().size() == 0) {
             return;
         }
         final String content = event.getMessage().getContentRaw();
