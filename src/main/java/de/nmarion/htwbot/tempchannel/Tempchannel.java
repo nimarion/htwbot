@@ -36,12 +36,14 @@ public class Tempchannel implements TempchannelEvents {
         if (textChannel == null) {
             final Role piRole = member.getGuild().getRolesByName("Praktische Informatik", true).get(0);
             final Role kiRole = member.getGuild().getRolesByName("Kommunikationsinformatik", true).get(0);
+            final Role dfhiRole = member.getGuild().getRolesByName("DFHI", true).get(0);
             final Guild guild = voiceChannel.getGuild();
             voiceChannel.getParent().createTextChannel("temp-" + voiceChannel.getName().toLowerCase())
                     .addPermissionOverride(guild.getSelfMember(), MEMBER_PERMISSIONS, null)
                     .addPermissionOverride(member, MEMBER_PERMISSIONS, null)
                     .addPermissionOverride(piRole, null, MEMBER_PERMISSIONS)
                     .addPermissionOverride(kiRole, null, MEMBER_PERMISSIONS)
+                    .addPermissionOverride(dfhiRole, null, MEMBER_PERMISSIONS)
                     .addPermissionOverride(guild.getPublicRole(), null, MEMBER_PERMISSIONS)
                     .queue(channel -> setTextChannel((TextChannel) channel));
         } else {
