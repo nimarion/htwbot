@@ -34,7 +34,6 @@ public class MemberCommand extends Command {
                     .forEach(embedBuilder::appendDescription);
 
             message.getChannel().sendMessage(embedBuilder.build()).queue();
-            ;
         }).onError(error -> {
             embedBuilder.setDescription("Es gab einen Discord Fehler :/");
             message.getChannel().sendMessage(embedBuilder.build()).queue();

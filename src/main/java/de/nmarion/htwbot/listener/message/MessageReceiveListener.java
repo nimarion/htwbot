@@ -39,7 +39,7 @@ public class MessageReceiveListener extends ListenerAdapter {
             final Member member = event.getMember();
             final Role piRole = bot.getGuild().getRolesByName("Praktische Informatik", true).get(0);
             final Role kiRole = bot.getGuild().getRolesByName("Kommunikationsinformatik", true).get(0);
-            if (!member.getRoles().contains(piRole) && !member.getRoles().contains(kiRole)) {
+            if (member.getRoles().contains(piRole) || member.getRoles().contains(kiRole)) {
                 return;
             }
             try {
