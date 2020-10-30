@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.nmarion.htwbot.commands.CommandManager;
-import de.nmarion.htwbot.commands.VerifyCommand.VerifyPerson;
 import de.nmarion.htwbot.listener.message.MessageReceiveListener;
+import de.nmarion.htwbot.listener.message.MessageReceiveListener.VerifyPerson;
 import de.nmarion.htwbot.listener.other.GuildReadyListener;
 import de.nmarion.htwbot.listener.voice.GuildVoiceListener;
 import de.nmarion.htwbot.tempchannel.Tempchannel;
