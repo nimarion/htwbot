@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.nmarion.htwbot.commands.CommandManager;
+import de.nmarion.htwbot.listener.guild.GuildMemberJoinListener;
+import de.nmarion.htwbot.listener.guild.GuildMemberLeaveListener;
+import de.nmarion.htwbot.listener.guild.GuildMemberNickChangeListener;
 import de.nmarion.htwbot.listener.message.MessageReceiveListener;
 import de.nmarion.htwbot.listener.message.MessageReceiveListener.VerifyPerson;
 import de.nmarion.htwbot.listener.other.GuildReadyListener;
@@ -50,6 +53,9 @@ public class HtwBot {
 
         new MessageReceiveListener(this);
         new GuildVoiceListener(this);
+        new GuildMemberJoinListener(this);
+        new GuildMemberLeaveListener(this);
+        new GuildMemberNickChangeListener(this);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             jda.shutdown();

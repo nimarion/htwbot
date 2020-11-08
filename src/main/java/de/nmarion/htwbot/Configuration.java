@@ -15,6 +15,7 @@ public class Configuration {
     public static final String MAIL_ADDRESS;
     public static final String MAIL_PASSWORD;
     public static final String MAIL_HOSTNAME;
+    public static final String BOT_CHANNEL;
 
     static {
         final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
@@ -26,6 +27,7 @@ public class Configuration {
         MAIL_ADDRESS = getenv("MAIL_ADDRESS", dotenv);
         MAIL_PASSWORD = getenv("MAIL_PASSWORD", dotenv);
         MAIL_HOSTNAME = getenv("MAIL_HOSTNAME", dotenv);
+        BOT_CHANNEL = getenv("BOT_CHANNEL", dotenv);
 
         try {
             checkNull();
