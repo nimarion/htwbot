@@ -1,14 +1,21 @@
 package de.nmarion.htwbot.listener.message;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
+import org.apache.commons.mail.util.IDNEmailAddressConverter;
 
 import de.nmarion.htwbot.Configuration;
 import de.nmarion.htwbot.HtwBot;
@@ -106,12 +113,13 @@ public class MessageReceiveListener extends ListenerAdapter {
         final Integer randomCode = 100000 + Constants.RANDOM.nextInt(900000);
         try {
             EMAIL.setMsg("Dein Bestätigungscode ist " + randomCode);
-            EMAIL.setTo(Collections.emptyList());
-            EMAIL.addTo(mail);
+            final List<InternetAddress> list = new ArrayList<>();
+            list.add(new InternetAddress(new IDNEmailAddressConverter().toASCII(mail)));
+            EMAIL.setTo(list);
             EMAIL.send();
             bot.getVerifyCodes().put(member, new VerifyPerson(mail, randomCode));
             return "Der Code wurde versendet! Bitte überprüfe dein Postfach\nBei Problemen: <#771308490676895774>";
-        } catch (EmailException e) {
+        } catch (EmailException | AddressException e) {
             e.printStackTrace();
             return "Es gab einen Fehler beim versenden der Mail";
         }
