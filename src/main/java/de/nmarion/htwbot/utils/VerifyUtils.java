@@ -1,6 +1,5 @@
 package de.nmarion.htwbot.utils;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.regex.Matcher;
@@ -17,12 +16,10 @@ public class VerifyUtils {
     static {
         VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
                 Pattern.CASE_INSENSITIVE);
-        if (new File("data/mails.json").exists()) {
-            try {
-                MAIL_JSON_OBJECT = JsonParser.parseReader(new FileReader("data/mails.json")).getAsJsonObject();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+        try {
+            MAIL_JSON_OBJECT = JsonParser.parseReader(new FileReader("data/mails.json")).getAsJsonObject();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -47,8 +44,5 @@ public class VerifyUtils {
     public static String getNameFromMail(final String mail) {
         return mailExists(mail) ? MAIL_JSON_OBJECT.get(mail).getAsString() : null;
     }
-
-    public static void main(String... args){
-        System.out.println(mailExists("pib.niklas.marion@htw-saarland.de"));
-    }
+    
 }

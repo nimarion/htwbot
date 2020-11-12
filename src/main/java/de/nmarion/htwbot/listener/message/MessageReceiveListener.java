@@ -1,17 +1,12 @@
 package de.nmarion.htwbot.listener.message;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
-import org.apache.commons.mail.util.IDNEmailAddressConverter;
 
 import de.nmarion.htwbot.Configuration;
 import de.nmarion.htwbot.HtwBot;
@@ -28,26 +23,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class MessageReceiveListener extends ListenerAdapter {
 
     private final HtwBot bot;
-    private static final Email EMAIL;
-
-    static {
-
-        if (Configuration.MAIL_ADDRESS != null && Configuration.MAIL_HOSTNAME != null
-                && Configuration.MAIL_PASSWORD != null) {
-            EMAIL = new SimpleEmail().setSubject("Discord Code").setStartTLSEnabled(true);
-            EMAIL.setSmtpPort(587);
-            EMAIL.setAuthenticator(new DefaultAuthenticator(Configuration.MAIL_ADDRESS, Configuration.MAIL_PASSWORD));
-            EMAIL.setDebug(false);
-            EMAIL.setHostName(Configuration.MAIL_HOSTNAME);
-            try {
-                EMAIL.setFrom(Configuration.MAIL_ADDRESS);
-            } catch (EmailException e) {
-                e.printStackTrace();
-            }
-        } else {
-            EMAIL = null;
-        }
-    }
 
     public MessageReceiveListener(final HtwBot bot) {
         this.bot = bot;
@@ -57,7 +32,7 @@ public class MessageReceiveListener extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         if (event.getAuthor().isBot() || !event.getChannel().getName().equals("verifizieren")
-                || checkRoles(event.getMember()) || EMAIL == null) {
+                || checkRoles(event.getMember())) {
             return;
         }
         try {
@@ -113,14 +88,18 @@ public class MessageReceiveListener extends ListenerAdapter {
     private String sendMail(final Member member, final String mail) {
         final Integer randomCode = 100000 + Constants.RANDOM.nextInt(900000);
         try {
-            EMAIL.setMsg("Dein Bestätigungscode ist " + randomCode);
-            final List<InternetAddress> list = new ArrayList<>();
-            list.add(new InternetAddress(new IDNEmailAddressConverter().toASCII(mail)));
-            EMAIL.setTo(list);
-            EMAIL.send();
+            final Email email = new SimpleEmail().setSubject("Discord Code").setStartTLSEnabled(true);
+            email.setSmtpPort(587);
+            email.setAuthenticator(new DefaultAuthenticator(Configuration.MAIL_ADDRESS, Configuration.MAIL_PASSWORD));
+            email.setDebug(false);
+            email.setHostName(Configuration.MAIL_HOSTNAME);
+            email.setMsg("Dein Bestätigungscode ist " + randomCode);
+            email.addTo(mail);
+            email.setFrom(Configuration.MAIL_ADDRESS);
+            email.send();
             bot.getVerifyCodes().put(member, new VerifyPerson(mail, randomCode));
             return "Der Code wurde versendet! Bitte überprüfe dein Postfach\nBei Problemen: <#771308490676895774>";
-        } catch (EmailException | AddressException e) {
+        } catch (EmailException e) {
             e.printStackTrace();
             return "Es gab einen Fehler beim versenden der Mail";
         }
