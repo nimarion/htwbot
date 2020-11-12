@@ -10,6 +10,7 @@ factoryConfiguration.json
 
 ### dotenv ###
 .env
+data
 
 ### Eclipse ###
 .metadata

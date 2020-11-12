@@ -1,12 +1,8 @@
 package de.nmarion.htwbot.listener.message;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -21,6 +17,7 @@ import de.nmarion.htwbot.Configuration;
 import de.nmarion.htwbot.HtwBot;
 import de.nmarion.htwbot.utils.Constants;
 import de.nmarion.htwbot.utils.DiscordUtils;
+import de.nmarion.htwbot.utils.VerifyUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -31,12 +28,10 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class MessageReceiveListener extends ListenerAdapter {
 
     private final HtwBot bot;
-    private static final Pattern VALID_EMAIL_ADDRESS_REGEX;
     private static final Email EMAIL;
 
     static {
-        VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
-                Pattern.CASE_INSENSITIVE);
+
         if (Configuration.MAIL_ADDRESS != null && Configuration.MAIL_HOSTNAME != null
                 && Configuration.MAIL_PASSWORD != null) {
             EMAIL = new SimpleEmail().setSubject("Discord Code").setStartTLSEnabled(true);
@@ -69,12 +64,17 @@ public class MessageReceiveListener extends ListenerAdapter {
             checkCode(Integer.valueOf(event.getMessage().getContentRaw()), event.getMessage());
         } catch (NumberFormatException exception) {
             final EmbedBuilder embedBuilder = DiscordUtils.getDefaultEmbed(event.getMember());
-            if (checkMail(event.getMessage().getContentRaw())) {
-                if (bot.getVerifyCodes().containsKey(event.getMember())) {
-                    embedBuilder.setDescription(
-                            "Du hast bereits eine Verifzierung gestartet.\nBitte überprüfe dein Postfach auf neues Mails");
+            if (VerifyUtils.checkMailFormat(event.getMessage().getContentRaw())) {
+                if (VerifyUtils.mailExists(event.getMessage().getContentRaw())) {
+                    if (bot.getVerifyCodes().containsKey(event.getMember())) {
+                        embedBuilder.setDescription(
+                                "Du hast bereits eine Verifzierung gestartet.\nBitte überprüfe dein Postfach auf neues Mails");
+                    } else {
+                        embedBuilder.setDescription(sendMail(event.getMember(), event.getMessage().getContentRaw()));
+                    }
                 } else {
-                    embedBuilder.setDescription(sendMail(event.getMember(), event.getMessage().getContentRaw()));
+                    embedBuilder.setDescription(
+                            "Diese Email existiert nicht oder wurde falsch angegeben. \n**pib/ki.vorname.nachname@htw-saarland.de**");
                 }
             } else {
                 embedBuilder.setDescription(
@@ -99,6 +99,7 @@ public class MessageReceiveListener extends ListenerAdapter {
             if (code.equals(verifyPerson.getRandomCode())) {
                 final Role piRole = bot.getGuild().getRolesByName("Praktische Informatik", true).get(0);
                 final Role kiRole = bot.getGuild().getRolesByName("Kommunikationsinformatik", true).get(0);
+                member.getGuild().modifyNickname(member, VerifyUtils.getNameFromMail(verifyPerson.getMail())).queue();
                 member.getGuild().addRoleToMember(member, verifyPerson.getMail().startsWith("ki") ? kiRole : piRole)
                         .queue(success -> bot.getVerifyCodes().remove(member));
             } else {
@@ -123,17 +124,6 @@ public class MessageReceiveListener extends ListenerAdapter {
             e.printStackTrace();
             return "Es gab einen Fehler beim versenden der Mail";
         }
-    }
-
-    private boolean checkMail(final String mail) {
-        final Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(mail);
-        if (matcher.matches()) {
-            final String mailAddress = matcher.group(0);
-            final boolean validDomain = mailAddress.endsWith("htw-saarland.de");
-            final boolean validStart = (mailAddress.startsWith("ki") ^ mailAddress.startsWith("pib"));
-            return validDomain && validStart;
-        }
-        return false;
     }
 
     public class VerifyPerson {
