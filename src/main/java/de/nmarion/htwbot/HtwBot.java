@@ -17,6 +17,7 @@ import de.nmarion.htwbot.listener.message.MessageReceiveListener;
 import de.nmarion.htwbot.listener.message.MessageReceiveListener.VerifyPerson;
 import de.nmarion.htwbot.listener.other.GuildReadyListener;
 import de.nmarion.htwbot.listener.voice.GuildVoiceListener;
+import de.nmarion.htwbot.music.MusicManager;
 import de.nmarion.htwbot.tempchannel.Tempchannel;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.JDA;
@@ -34,6 +35,7 @@ public class HtwBot {
     private static final Logger logger = LoggerFactory.getLogger(HtwBot.class);
 
     private final JDA jda;
+    private final MusicManager musicManager;
     private final CommandManager commandManager;
     private final Map<String, Tempchannel> tempchannels;
     private final Map<Member, VerifyPerson> verifyCodes;
@@ -43,9 +45,10 @@ public class HtwBot {
         logger.info("Starting htwbot");
 
         tempchannels = new HashMap<>();
-        this.verifyCodes= ExpiringMap.builder().expiration(15, TimeUnit.MINUTES)
+        this.verifyCodes = ExpiringMap.builder().expiration(15, TimeUnit.MINUTES)
                 .expirationPolicy(ExpirationPolicy.ACCESSED).build();
 
+        musicManager = new MusicManager(this);
         jda = initJDA(Configuration.DISCORD_TOKEN);
         logger.info("JDA set up!");
 
@@ -66,7 +69,8 @@ public class HtwBot {
     }
 
     private JDA initJDA(final String token) throws Exception {
-        JDABuilder builder = JDABuilder.createDefault(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_VOICE_STATES);
+        JDABuilder builder = JDABuilder.createDefault(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS,
+                GatewayIntent.GUILD_VOICE_STATES);
         builder.enableCache(CacheFlag.MEMBER_OVERRIDES);
         builder.addEventListeners(new GuildReadyListener(this));
         builder.setMemberCachePolicy(MemberCachePolicy.ALL);
@@ -78,11 +82,15 @@ public class HtwBot {
         }
     }
 
-    public JDA getJDA(){
+    public JDA getJDA() {
         return jda;
     }
 
-    public CommandManager getCommandManager(){
+    public MusicManager getMusicManager() {
+        return musicManager;
+    }
+
+    public CommandManager getCommandManager() {
         return commandManager;
     }
 
@@ -90,11 +98,11 @@ public class HtwBot {
         return tempchannels;
     }
 
-    public Guild getGuild(){
+    public Guild getGuild() {
         return jda.getGuilds().get(0);
     }
 
-    public Map<Member, VerifyPerson> getVerifyCodes(){
+    public Map<Member, VerifyPerson> getVerifyCodes() {
         return verifyCodes;
     }
 
