@@ -1,6 +1,7 @@
 package de.nmarion.htwbot.commands.music;
 
 import de.nmarion.htwbot.commands.Command;
+import de.nmarion.htwbot.utils.DiscordUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -13,9 +14,9 @@ public class VolumeCommand extends Command {
 
     @Override
     public void execute(String[] args, Message message) {
-        Guild guild = message.getGuild();
-        EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
-        if (message.getMember().getVoiceState() != null && message.getMember().getVoiceState().inVoiceChannel()) {
+        final Guild guild = message.getGuild();
+        final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
+        if (DiscordUtils.isConnected(message.getMember(), embedBuilder)) {
             if (args.length == 1) {
                 int volume;
                 try {
@@ -35,10 +36,7 @@ public class VolumeCommand extends Command {
                 embedBuilder.addField("Lautstärke: " + getBot().getMusicManager().getVolume(guild),
                         getVolume(getBot().getMusicManager().getVolume(guild)), false);
             }
-        } else {
-            embedBuilder.setDescription("Du bist in keinem Voicechannel ^^");
         }
-
         message.getTextChannel().sendMessage(embedBuilder.build()).queue();
     }
 

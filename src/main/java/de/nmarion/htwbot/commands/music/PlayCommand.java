@@ -1,6 +1,7 @@
 package de.nmarion.htwbot.commands.music;
 
 import de.nmarion.htwbot.commands.Command;
+import de.nmarion.htwbot.utils.DiscordUtils;
 import de.nmarion.htwbot.utils.StringUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -8,14 +9,13 @@ import net.dv8tion.jda.api.entities.Message;
 public class PlayCommand extends Command {
 
     public PlayCommand() {
-        super("play", "Spiele etwas Musik");
+        super("play", "Spielt etwas Musik");
     }
 
     @Override
     public void execute(String[] args, Message message) {
-        EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
-
-        if (message.getMember().getVoiceState() != null && message.getMember().getVoiceState().inVoiceChannel()) {
+        final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
+        if (DiscordUtils.isConnected(message.getMember(), embedBuilder)) {
             if (message.getGuild().getAudioManager().getConnectedChannel() == null) {
                 message.getGuild().getAudioManager()
                         .openAudioConnection(message.getMember().getVoiceState().getChannel());
@@ -29,11 +29,11 @@ public class PlayCommand extends Command {
                     getBot().getMusicManager().loadTrack(message.getTextChannel(), message.getMember().getUser(),
                             "ytsearch:" + String.join(" ", args));
                 } else {
-                    getBot().getMusicManager().loadTrack(message.getTextChannel(), message.getMember().getUser(), args[0]);
+                    getBot().getMusicManager().loadTrack(message.getTextChannel(), message.getMember().getUser(),
+                            args[0]);
                 }
             }
         } else {
-            embedBuilder.setDescription("Du bist in keinem Voicechannel ^^");
             message.getTextChannel().sendMessage(embedBuilder.build()).queue();
         }
     }

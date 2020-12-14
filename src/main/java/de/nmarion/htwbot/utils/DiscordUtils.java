@@ -17,5 +17,13 @@ public class DiscordUtils {
     public static EmbedBuilder getDefaultEmbed(final Member member) {
         return getDefaultEmbed(member.getUser()).setColor(member.getGuild().getSelfMember().getColor());
     }
+
+    public static boolean isConnected(final Member member, final EmbedBuilder embedBuilder){
+        if(member.getVoiceState() != null && member.getVoiceState().inVoiceChannel()){
+            return true;
+        }
+        embedBuilder.setDescription("Du bist in keinem Voicechannel");
+        return false;
+    }
     
 }
