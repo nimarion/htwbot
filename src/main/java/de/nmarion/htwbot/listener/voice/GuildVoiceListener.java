@@ -2,6 +2,7 @@ package de.nmarion.htwbot.listener.voice;
 
 import de.nmarion.htwbot.HtwBot;
 import de.nmarion.htwbot.tempchannel.Tempchannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.channel.voice.VoiceChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
@@ -26,6 +27,7 @@ public class GuildVoiceListener extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceMove(final GuildVoiceMoveEvent event) {
+        checkEmptyChannel(event.getChannelLeft());
         bot.getTempchannels().get(event.getChannelJoined().getId()).onTempchannelJoin(event.getChannelJoined(),
                 event.getMember());
         bot.getTempchannels().get(event.getChannelLeft().getId()).onTempchannelLeave(event.getChannelLeft(),
@@ -34,6 +36,7 @@ public class GuildVoiceListener extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceLeave(final GuildVoiceLeaveEvent event) {
+        checkEmptyChannel(event.getChannelLeft());
         bot.getTempchannels().get(event.getChannelLeft().getId()).onTempchannelLeave(event.getChannelLeft(),
                 event.getMember());
     }
@@ -46,5 +49,12 @@ public class GuildVoiceListener extends ListenerAdapter {
     @Override
     public void onVoiceChannelDelete(final VoiceChannelDeleteEvent event) {
         bot.getTempchannels().remove(event.getChannel().getId());
+    }
+
+    private void checkEmptyChannel(VoiceChannel voiceChannel) {
+        if (voiceChannel.getMembers().size() == 1
+                && voiceChannel.getMembers().contains(voiceChannel.getGuild().getSelfMember())) {
+            voiceChannel.getGuild().getAudioManager().closeAudioConnection();
+        }
     }
 }
