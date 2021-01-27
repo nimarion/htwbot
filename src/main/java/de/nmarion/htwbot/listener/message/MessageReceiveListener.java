@@ -117,7 +117,7 @@ public class MessageReceiveListener extends ListenerAdapter {
       email.send();
       bot.getVerifyCodes().put(member, new VerifyPerson(mail, randomCode));
       return "Der Code wurde versendet! Bitte überprüfe dein Postfach\n"
-                 + "Bei Problemen: <#771308490676895774>";
+          + "Bei Problemen: <#771308490676895774>";
     } catch (EmailException e) {
       e.printStackTrace();
       return "Es gab einen Fehler beim versenden der Mail";
