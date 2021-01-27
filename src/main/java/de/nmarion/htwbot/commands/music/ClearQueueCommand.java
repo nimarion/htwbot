@@ -7,18 +7,18 @@ import net.dv8tion.jda.api.entities.Message;
 
 public class ClearQueueCommand extends Command {
 
-    public ClearQueueCommand() {
-        super("clearqueue", "Leert die Warteschlange");
-    }
+  public ClearQueueCommand() {
+    super("clearqueue", "Leert die Warteschlange");
+  }
 
-    @Override
-    public void execute(String[] args, Message message) {
-        final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
-        if (DiscordUtils.isConnected(message.getMember(), embedBuilder)) {
-            getBot().getMusicManager().clearQueue(message.getGuild());
-            getBot().getMusicManager().stop(message.getGuild());
-            embedBuilder.setDescription("Warteschlange geleert");
-        }
-        message.getTextChannel().sendMessage(embedBuilder.build()).queue();
+  @Override
+  public void execute(String[] args, Message message) {
+    final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
+    if (DiscordUtils.isConnected(message.getMember(), embedBuilder)) {
+      getBot().getMusicManager().clearQueue(message.getGuild());
+      getBot().getMusicManager().stop(message.getGuild());
+      embedBuilder.setDescription("Warteschlange geleert");
     }
+    message.getTextChannel().sendMessage(embedBuilder.build()).queue();
+  }
 }

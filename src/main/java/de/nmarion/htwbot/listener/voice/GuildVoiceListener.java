@@ -12,49 +12,53 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class GuildVoiceListener extends ListenerAdapter {
 
-    private final HtwBot bot;
+  private final HtwBot bot;
 
-    public GuildVoiceListener(final HtwBot bot) {
-        this.bot = bot;
-        bot.getJDA().addEventListener(this);
-    }
+  public GuildVoiceListener(final HtwBot bot) {
+    this.bot = bot;
+    bot.getJDA().addEventListener(this);
+  }
 
-    @Override
-    public void onGuildVoiceJoin(final GuildVoiceJoinEvent event) {
-        bot.getTempchannels().get(event.getChannelJoined().getId()).onTempchannelJoin(event.getChannelJoined(),
-                event.getMember());
-    }
+  @Override
+  public void onGuildVoiceJoin(final GuildVoiceJoinEvent event) {
+    bot.getTempchannels()
+        .get(event.getChannelJoined().getId())
+        .onTempchannelJoin(event.getChannelJoined(), event.getMember());
+  }
 
-    @Override
-    public void onGuildVoiceMove(final GuildVoiceMoveEvent event) {
-        checkEmptyChannel(event.getChannelLeft());
-        bot.getTempchannels().get(event.getChannelJoined().getId()).onTempchannelJoin(event.getChannelJoined(),
-                event.getMember());
-        bot.getTempchannels().get(event.getChannelLeft().getId()).onTempchannelLeave(event.getChannelLeft(),
-                event.getMember());
-    }
+  @Override
+  public void onGuildVoiceMove(final GuildVoiceMoveEvent event) {
+    checkEmptyChannel(event.getChannelLeft());
+    bot.getTempchannels()
+        .get(event.getChannelJoined().getId())
+        .onTempchannelJoin(event.getChannelJoined(), event.getMember());
+    bot.getTempchannels()
+        .get(event.getChannelLeft().getId())
+        .onTempchannelLeave(event.getChannelLeft(), event.getMember());
+  }
 
-    @Override
-    public void onGuildVoiceLeave(final GuildVoiceLeaveEvent event) {
-        checkEmptyChannel(event.getChannelLeft());
-        bot.getTempchannels().get(event.getChannelLeft().getId()).onTempchannelLeave(event.getChannelLeft(),
-                event.getMember());
-    }
+  @Override
+  public void onGuildVoiceLeave(final GuildVoiceLeaveEvent event) {
+    checkEmptyChannel(event.getChannelLeft());
+    bot.getTempchannels()
+        .get(event.getChannelLeft().getId())
+        .onTempchannelLeave(event.getChannelLeft(), event.getMember());
+  }
 
-    @Override
-    public void onVoiceChannelCreate(final VoiceChannelCreateEvent event) {
-        bot.getTempchannels().put(event.getChannel().getId(), new Tempchannel());
-    }
+  @Override
+  public void onVoiceChannelCreate(final VoiceChannelCreateEvent event) {
+    bot.getTempchannels().put(event.getChannel().getId(), new Tempchannel());
+  }
 
-    @Override
-    public void onVoiceChannelDelete(final VoiceChannelDeleteEvent event) {
-        bot.getTempchannels().remove(event.getChannel().getId());
-    }
+  @Override
+  public void onVoiceChannelDelete(final VoiceChannelDeleteEvent event) {
+    bot.getTempchannels().remove(event.getChannel().getId());
+  }
 
-    private void checkEmptyChannel(VoiceChannel voiceChannel) {
-        if (voiceChannel.getMembers().size() == 1
-                && voiceChannel.getMembers().contains(voiceChannel.getGuild().getSelfMember())) {
-            voiceChannel.getGuild().getAudioManager().closeAudioConnection();
-        }
+  private void checkEmptyChannel(VoiceChannel voiceChannel) {
+    if (voiceChannel.getMembers().size() == 1
+        && voiceChannel.getMembers().contains(voiceChannel.getGuild().getSelfMember())) {
+      voiceChannel.getGuild().getAudioManager().closeAudioConnection();
     }
+  }
 }
