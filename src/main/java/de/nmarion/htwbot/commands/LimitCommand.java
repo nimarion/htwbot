@@ -14,19 +14,22 @@ public class LimitCommand extends Command {
   @Override
   public void execute(String[] args, Message message) {
     final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
-    if(args.length == 0){
+    if (args.length == 0) {
       embedBuilder.setDescription("!limit <zahl>");
-    } else if(DiscordUtils.isConnected(message.getMember(), embedBuilder)) {
+    } else if (DiscordUtils.isConnected(message.getMember(), embedBuilder)) {
       final VoiceChannel voiceChannel = message.getMember().getVoiceState().getChannel();
-      if(voiceChannel.getName().toLowerCase().contains("custom")){
+      if (voiceChannel.getName().toLowerCase().contains("custom")) {
         try {
           int max = Integer.valueOf(args[0]);
-          if(max >= 2){
-            voiceChannel.getManager().setUserLimit(max).queue(success -> embedBuilder.setDescription("Das Limit ist jetzt " + max));
-          } else{
+          if (max >= 2) {
+            voiceChannel
+                .getManager()
+                .setUserLimit(max)
+                .queue(success -> embedBuilder.setDescription("Das Limit ist jetzt " + max));
+          } else {
             embedBuilder.setDescription("Das Limit muss größer als 1 sein");
           }
-        } catch (NumberFormatException exception){
+        } catch (NumberFormatException exception) {
           embedBuilder.setDescription("!limit <zahl>");
         }
       } else {

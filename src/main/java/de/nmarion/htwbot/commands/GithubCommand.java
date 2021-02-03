@@ -2,15 +2,14 @@ package de.nmarion.htwbot.commands;
 
 import net.dv8tion.jda.api.entities.Message;
 
-public class GithubCommand extends Command{
+public class GithubCommand extends Command {
 
-    public GithubCommand() {
-        super("github", "Schickt den Github Link des Bots");
-    }
+  public GithubCommand() {
+    super("github", "Schickt den Github Link des Bots");
+  }
 
-    @Override
-    public void execute(String[] args, Message message) {
-        message.getTextChannel().sendMessage("https://github.com/nimarion/htwbot").queue();
-    }
-    
+  @Override
+  public void execute(String[] args, Message message) {
+    message.getTextChannel().sendMessage("https://github.com/nimarion/htwbot").queue();
+  }
 }
