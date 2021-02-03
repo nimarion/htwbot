@@ -1,9 +1,8 @@
 package de.nmarion.htwbot.tempchannel;
 
+import de.nmarion.htwbot.utils.DiscordUtils;
 import java.util.Arrays;
 import java.util.List;
-
-import de.nmarion.htwbot.utils.DiscordUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -22,8 +21,7 @@ public class Tempchannel implements TempchannelEvents {
 
   private TextChannel textChannel;
 
-  public Tempchannel() {
-  }
+  public Tempchannel() {}
 
   public Tempchannel(final TextChannel textChannel) {
     this.textChannel = textChannel;
@@ -39,21 +37,26 @@ public class Tempchannel implements TempchannelEvents {
       final Role kiRole = member.getGuild().getRolesByName("Kommunikationsinformatik", true).get(0);
       final Role dfhiRole = member.getGuild().getRolesByName("DFHI", true).get(0);
       final Guild guild = voiceChannel.getGuild();
-      voiceChannel.getParent().createTextChannel("temp-" + voiceChannel.getName().toLowerCase())
+      voiceChannel
+          .getParent()
+          .createTextChannel("temp-" + voiceChannel.getName().toLowerCase())
           .addPermissionOverride(guild.getSelfMember(), MEMBER_PERMISSIONS, null)
           .addPermissionOverride(member, MEMBER_PERMISSIONS, null)
           .addPermissionOverride(piRole, null, MEMBER_PERMISSIONS)
           .addPermissionOverride(kiRole, null, MEMBER_PERMISSIONS)
           .addPermissionOverride(dfhiRole, null, MEMBER_PERMISSIONS)
-          .addPermissionOverride(guild.getPublicRole(), null, MEMBER_PERMISSIONS).queue(channel -> {
-            setTextChannel((TextChannel) channel);
-            if (voiceChannel.getName().toLowerCase().contains("custom")) {
-              final EmbedBuilder embedBuilder = DiscordUtils.getDefaultEmbed(member);
-              embedBuilder
-                  .setDescription(member.getAsMention() + " mit !limit kannst du das Maximale Nutzer Limit ändern");
-              channel.sendMessage(embedBuilder.build()).queue();
-            }
-          });
+          .addPermissionOverride(guild.getPublicRole(), null, MEMBER_PERMISSIONS)
+          .queue(
+              channel -> {
+                setTextChannel((TextChannel) channel);
+                if (voiceChannel.getName().toLowerCase().contains("custom")) {
+                  final EmbedBuilder embedBuilder = DiscordUtils.getDefaultEmbed(member);
+                  embedBuilder.setDescription(
+                      member.getAsMention()
+                          + " mit !limit kannst du das Maximale Nutzer Limit ändern");
+                  channel.sendMessage(embedBuilder.build()).queue();
+                }
+              });
     } else {
       if (textChannel.getPermissionOverride(member) != null) {
         textChannel.getPermissionOverride(member).getManager().grant(MEMBER_PERMISSIONS).queue();
@@ -107,10 +110,15 @@ public class Tempchannel implements TempchannelEvents {
       }
       if (voiceChannel.getMembers().contains(member)) {
         if (textChannel.getPermissionOverride(member) != null) {
-          textChannel.getPermissionOverride(member).getManager()
-              .grant(Permission.MESSAGE_READ, Permission.MESSAGE_WRITE).queue();
+          textChannel
+              .getPermissionOverride(member)
+              .getManager()
+              .grant(Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)
+              .queue();
         } else {
-          textChannel.createPermissionOverride(member).setAllow(Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)
+          textChannel
+              .createPermissionOverride(member)
+              .setAllow(Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)
               .queue();
         }
       } else {
