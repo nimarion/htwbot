@@ -22,10 +22,8 @@ public class LimitCommand extends Command {
         try {
           int max = Integer.valueOf(args[0]);
           if (max >= 2) {
-            voiceChannel
-                .getManager()
-                .setUserLimit(max)
-                .queue(success -> embedBuilder.setDescription("Das Limit ist jetzt " + max));
+            voiceChannel.getManager().setUserLimit(max).queue();
+            embedBuilder.setDescription("Das Limit ist jetzt " + max);
           } else {
             embedBuilder.setDescription("Das Limit muss größer als 1 sein");
           }
