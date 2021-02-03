@@ -18,7 +18,7 @@ public class JoinCommand extends Command {
     final AudioManager audioManager = message.getGuild().getAudioManager();
     final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
     if (DiscordUtils.isConnected(message.getMember(), embedBuilder)) {
-      if (audioManager.isConnected() || audioManager.isAttemptingToConnect()) {
+      if (audioManager.isConnected()) {
         embedBuilder.setDescription("Der Bot ist bereits verbunden");
       } else if (!message.getMember().getVoiceState().inVoiceChannel()) {
         embedBuilder.setDescription("Dafür musst du in einem Voicechannel sein.");
