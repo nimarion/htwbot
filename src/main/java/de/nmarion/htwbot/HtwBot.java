@@ -35,7 +35,7 @@ public class HtwBot {
     logger.info("Starting htwbot");
 
     tempchannels = new HashMap<>();
-    
+
     musicManager = new MusicManager(this);
     jda = initJDA(Configuration.DISCORD_TOKEN);
     logger.info("JDA set up!");
