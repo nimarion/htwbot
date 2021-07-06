@@ -27,7 +27,6 @@ public class PlayCommand extends Command {
   @Override
   public void execute(SlashCommandEvent event) {
     if (DiscordUtils.isConnected(event)) {
-      event.deferReply().queue();
       if (event.getGuild().getAudioManager().getConnectedChannel() == null) {
         event
             .getGuild()

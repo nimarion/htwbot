@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 public class InfoCommand extends Command {
@@ -54,7 +55,7 @@ public class InfoCommand extends Command {
         "Betriebssystem", ManagementFactory.getOperatingSystemMXBean().getName(), true);
     event
         .reply(new MessageBuilder().setEmbeds(embedBuilder.build()).build())
-        .setEphemeral(true)
+        .addActionRow(Button.link("https://github.com/nimarion/htwbot", "Github"))
         .queue();
   }
 }
