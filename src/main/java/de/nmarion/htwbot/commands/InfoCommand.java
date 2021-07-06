@@ -28,16 +28,33 @@ public class InfoCommand extends Command {
 
     final EmbedBuilder embedBuilder = getEmbed(event);
     embedBuilder.addField("Ping", jda.getGatewayPing() + "ms", true);
-    embedBuilder.addField("Uptime",
-        String.valueOf(TimeUnit.MILLISECONDS.toDays(uptime) + "d " + TimeUnit.MILLISECONDS.toHours(uptime) % 24 + "h "
-            + TimeUnit.MILLISECONDS.toMinutes(uptime) % 60 + "m " + TimeUnit.MILLISECONDS.toSeconds(uptime) % 60 + "s"),
+    embedBuilder.addField(
+        "Uptime",
+        String.valueOf(
+            TimeUnit.MILLISECONDS.toDays(uptime)
+                + "d "
+                + TimeUnit.MILLISECONDS.toHours(uptime) % 24
+                + "h "
+                + TimeUnit.MILLISECONDS.toMinutes(uptime) % 60
+                + "m "
+                + TimeUnit.MILLISECONDS.toSeconds(uptime) % 60
+                + "s"),
         true);
-    embedBuilder.addField("Commands", String.valueOf(getBot().getCommandManager().getAvailableCommands().size()), true);
-    embedBuilder.addField("Mitglieder", String.valueOf(jda.getGuilds().stream().mapToInt(Guild::getMemberCount).sum()),
+    embedBuilder.addField(
+        "Commands",
+        String.valueOf(getBot().getCommandManager().getAvailableCommands().size()),
         true);
-    embedBuilder.addField("Java Version", System.getProperty("java.runtime.version").replace("+", "_"), true);
-    embedBuilder.addField("Betriebssystem", ManagementFactory.getOperatingSystemMXBean().getName(), true);
-    event.reply(new MessageBuilder().setEmbeds(embedBuilder.build()).build()).setEphemeral(true).queue();
+    embedBuilder.addField(
+        "Mitglieder",
+        String.valueOf(jda.getGuilds().stream().mapToInt(Guild::getMemberCount).sum()),
+        true);
+    embedBuilder.addField(
+        "Java Version", System.getProperty("java.runtime.version").replace("+", "_"), true);
+    embedBuilder.addField(
+        "Betriebssystem", ManagementFactory.getOperatingSystemMXBean().getName(), true);
+    event
+        .reply(new MessageBuilder().setEmbeds(embedBuilder.build()).build())
+        .setEphemeral(true)
+        .queue();
   }
-
 }

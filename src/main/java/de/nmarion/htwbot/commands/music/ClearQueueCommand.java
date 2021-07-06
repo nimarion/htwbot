@@ -25,5 +25,4 @@ public class ClearQueueCommand extends Command {
       say(event, "Warteschlange geleert");
     }
   }
-
 }

@@ -19,8 +19,9 @@ public class VolumeCommand extends Command {
 
   @Override
   public void register(CommandListUpdateAction commandListUpdateAction) {
-    commandListUpdateAction.addCommands(new CommandData(getCommand(), getDescription())
-        .addOptions(new OptionData(OptionType.INTEGER, "volume", "0-100").setRequired(true)));
+    commandListUpdateAction.addCommands(
+        new CommandData(getCommand(), getDescription())
+            .addOptions(new OptionData(OptionType.INTEGER, "volume", "0-100").setRequired(true)));
   }
 
   @Override
@@ -30,11 +31,14 @@ public class VolumeCommand extends Command {
       final EmbedBuilder embedBuilder = getEmbed(event);
       int volume = (int) event.getOption("volume").getAsLong();
       if (volume < 0 || volume > 100) {
-        embedBuilder.addField("Ungültige Lautstärke", "Wert kann nur zwischen 0 und 100 gesetzt werden.", false);
+        embedBuilder.addField(
+            "Ungültige Lautstärke", "Wert kann nur zwischen 0 und 100 gesetzt werden.", false);
       } else {
         getBot().getMusicManager().setVolume(guild, volume);
-        embedBuilder.addField("Neue Lautstärke: " + getBot().getMusicManager().getVolume(guild),
-            getVolume(getBot().getMusicManager().getVolume(guild)), false);
+        embedBuilder.addField(
+            "Neue Lautstärke: " + getBot().getMusicManager().getVolume(guild),
+            getVolume(getBot().getMusicManager().getVolume(guild)),
+            false);
       }
       event.reply(new MessageBuilder().setEmbeds(embedBuilder.build()).build()).queue();
     }

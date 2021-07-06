@@ -26,5 +26,4 @@ public class PauseCommand extends Command {
       say(event, "Der aktuelle Track wurde " + pausedString + ".");
     }
   }
-
 }

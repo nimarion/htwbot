@@ -21,14 +21,19 @@ public class RepeatCommand extends Command {
   public void execute(SlashCommandEvent event) {
     if (DiscordUtils.isConnected(event)) {
       if (event.getGuild().getAudioManager().getConnectedChannel() == null) {
-        event.getGuild().getAudioManager().openAudioConnection(event.getMember().getVoiceState().getChannel());
+        event
+            .getGuild()
+            .getAudioManager()
+            .openAudioConnection(event.getMember().getVoiceState().getChannel());
       }
-      getBot().getMusicManager().setRepeat(event.getGuild(), !getBot().getMusicManager().isRepeat(event.getGuild()));
-      say(event, getBot().getMusicManager().isRepeat(event.getGuild()) ? "Musik wird jetzt wiederholt :repeat:"
-          : "Musik spielt jetzt wieder normal");
-
+      getBot()
+          .getMusicManager()
+          .setRepeat(event.getGuild(), !getBot().getMusicManager().isRepeat(event.getGuild()));
+      say(
+          event,
+          getBot().getMusicManager().isRepeat(event.getGuild())
+              ? "Musik wird jetzt wiederholt :repeat:"
+              : "Musik spielt jetzt wieder normal");
     }
-
   }
-
 }

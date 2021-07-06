@@ -10,7 +10,8 @@ public class DiscordUtils {
 
   public static EmbedBuilder getDefaultEmbed(final User user) {
     return new EmbedBuilder()
-        .setFooter("@" + user.getName() + "#" + user.getDiscriminator(), user.getEffectiveAvatarUrl())
+        .setFooter(
+            "@" + user.getName() + "#" + user.getDiscriminator(), user.getEffectiveAvatarUrl())
         .setColor(Color.GREEN);
   }
 
@@ -27,7 +28,8 @@ public class DiscordUtils {
   }
 
   public static boolean isConnected(SlashCommandEvent event) {
-    if (event.getMember().getVoiceState() != null && event.getMember().getVoiceState().inVoiceChannel()) {
+    if (event.getMember().getVoiceState() != null
+        && event.getMember().getVoiceState().inVoiceChannel()) {
       return true;
     }
     event.reply("Du bist in keinem Voicechannel").setEphemeral(true).queue();

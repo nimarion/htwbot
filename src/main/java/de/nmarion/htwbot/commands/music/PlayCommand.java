@@ -17,8 +17,11 @@ public class PlayCommand extends Command {
 
   @Override
   public void register(CommandListUpdateAction commandListUpdateAction) {
-    commandListUpdateAction.addCommands(new CommandData(getCommand(), getDescription())
-        .addOptions(new OptionData(OptionType.STRING, "song", "Youtube,Twitch,Soundcloud,...").setRequired(true)));
+    commandListUpdateAction.addCommands(
+        new CommandData(getCommand(), getDescription())
+            .addOptions(
+                new OptionData(OptionType.STRING, "song", "Youtube,Twitch,Soundcloud,...")
+                    .setRequired(true)));
   }
 
   @Override
@@ -26,7 +29,10 @@ public class PlayCommand extends Command {
     if (DiscordUtils.isConnected(event)) {
       event.deferReply().queue();
       if (event.getGuild().getAudioManager().getConnectedChannel() == null) {
-        event.getGuild().getAudioManager().openAudioConnection(event.getMember().getVoiceState().getChannel());
+        event
+            .getGuild()
+            .getAudioManager()
+            .openAudioConnection(event.getMember().getVoiceState().getChannel());
       }
       final String song = event.getOption("song").getAsString();
       getBot().getMusicManager().setPaused(event.getGuild(), false);
@@ -37,5 +43,4 @@ public class PlayCommand extends Command {
       }
     }
   }
-
 }

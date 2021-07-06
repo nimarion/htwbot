@@ -20,12 +20,13 @@ public class NowPlayingCommand extends Command {
   public void execute(SlashCommandEvent event) {
     if (event.getGuild().getAudioManager().getConnectedChannel() != null
         && getBot().getMusicManager().getPlayingTrack(event.getGuild()) != null) {
-      saySilent(event, "Es wird gerade **"
-          + getBot().getMusicManager().getPlayingTrack(event.getGuild()).getInfo().title + "** gespielt");
+      saySilent(
+          event,
+          "Es wird gerade **"
+              + getBot().getMusicManager().getPlayingTrack(event.getGuild()).getInfo().title
+              + "** gespielt");
     } else {
       saySilent(event, "Aktuell wird nichts gespielt");
     }
-
   }
-
 }

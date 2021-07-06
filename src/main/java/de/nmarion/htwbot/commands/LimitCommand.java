@@ -18,8 +18,9 @@ public class LimitCommand extends Command {
 
   @Override
   public void register(CommandListUpdateAction commandListUpdateAction) {
-    commandListUpdateAction.addCommands(new CommandData(getCommand(), getDescription())
-        .addOptions(new OptionData(OptionType.INTEGER, "limit", "2-99").setRequired(true)));
+    commandListUpdateAction.addCommands(
+        new CommandData(getCommand(), getDescription())
+            .addOptions(new OptionData(OptionType.INTEGER, "limit", "2-99").setRequired(true)));
   }
 
   @Override
