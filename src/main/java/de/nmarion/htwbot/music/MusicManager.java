@@ -15,9 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 public class MusicManager {
 
@@ -46,93 +48,63 @@ public class MusicManager {
     return musicManager;
   }
 
-  public void loadTrack(TextChannel channel, User requester, String trackUrl) {
-    Guild guild = channel.getGuild();
-    loadTrack(
-        guild,
-        trackUrl,
-        new AudioLoadResultHandler() {
-          @Override
-          public void trackLoaded(AudioTrack track) {
-            queue(guild, track);
-            EmbedBuilder eb =
-                getEmbed(guild, requester)
-                    .setAuthor(
-                        "Track geladen",
-                        trackUrl.startsWith("http") ? trackUrl : null,
-                        bot.getJDA().getSelfUser().getEffectiveAvatarUrl());
-            AudioTrackInfo trackInfo = track.getInfo();
-            String length;
-            if (TimeUnit.MILLISECONDS.toHours(trackInfo.length) >= 24) {
-              length =
-                  String.format(
-                      "%dd %02d:%02d:%02d",
-                      TimeUnit.MILLISECONDS.toDays(trackInfo.length),
-                      TimeUnit.MILLISECONDS.toHours(trackInfo.length) % 24,
-                      TimeUnit.MILLISECONDS.toMinutes(trackInfo.length) % 60,
-                      TimeUnit.MILLISECONDS.toSeconds(trackInfo.length) % 60);
-            } else {
-              length =
-                  String.format(
-                      "%02d:%02d:%02d",
-                      TimeUnit.MILLISECONDS.toHours(trackInfo.length) % 24,
-                      TimeUnit.MILLISECONDS.toMinutes(trackInfo.length) % 60,
-                      TimeUnit.MILLISECONDS.toSeconds(trackInfo.length) % 60);
-            }
-            eb.addField(
-                trackInfo.title,
-                "`" + trackInfo.author + " - " + (trackInfo.isStream ? "STREAM" : length) + "`",
-                false);
-            channel.sendMessage(eb.build()).queue();
-          }
+  public void loadTrack(SlashCommandEvent event, String trackUrl) {
+    final Guild guild = event.getGuild();
+    final User requester = event.getUser();
+    loadTrack(guild, trackUrl, new AudioLoadResultHandler() {
+      @Override
+      public void trackLoaded(AudioTrack track) {
+        queue(guild, track);
+        final EmbedBuilder eb = getEmbed(guild, requester).setAuthor("Track geladen",
+            trackUrl.startsWith("http") ? trackUrl : null, bot.getJDA().getSelfUser().getEffectiveAvatarUrl());
+        final AudioTrackInfo trackInfo = track.getInfo();
+        final String length;
+        if (TimeUnit.MILLISECONDS.toHours(trackInfo.length) >= 24) {
+          length = String.format("%dd %02d:%02d:%02d", TimeUnit.MILLISECONDS.toDays(trackInfo.length),
+              TimeUnit.MILLISECONDS.toHours(trackInfo.length) % 24,
+              TimeUnit.MILLISECONDS.toMinutes(trackInfo.length) % 60,
+              TimeUnit.MILLISECONDS.toSeconds(trackInfo.length) % 60);
+        } else {
+          length = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(trackInfo.length) % 24,
+              TimeUnit.MILLISECONDS.toMinutes(trackInfo.length) % 60,
+              TimeUnit.MILLISECONDS.toSeconds(trackInfo.length) % 60);
+        }
+        eb.addField(trackInfo.title, "`" + trackInfo.author + " - " + (trackInfo.isStream ? "STREAM" : length) + "`",
+            false);
+        event.reply(new MessageBuilder().setEmbeds(eb.build()).build()).queue();
+      }
 
-          @Override
-          public void playlistLoaded(AudioPlaylist playlist) {
-            List<AudioTrack> tracks = playlist.getTracks();
-            if (playlist.isSearchResult()) {
-              trackLoaded(tracks.get(0));
-              return;
-            }
-            EmbedBuilder eb =
-                getEmbed(guild, requester)
-                    .setAuthor(
-                        "Playlist geladen",
-                        playlist.isSearchResult() ? null : trackUrl,
-                        bot.getJDA().getSelfUser().getEffectiveAvatarUrl());
-            eb.addField(playlist.getName(), "`" + tracks.size() + " Videos gefunden`", false);
-            channel.sendMessage(eb.build()).queue();
-            queue(guild, tracks);
-            nextTrack(guild, false);
-          }
+      @Override
+      public void playlistLoaded(AudioPlaylist playlist) {
+        final List<AudioTrack> tracks = playlist.getTracks();
+        if (playlist.isSearchResult()) {
+          trackLoaded(tracks.get(0));
+          return;
+        }
+        final EmbedBuilder eb = getEmbed(guild, requester).setAuthor("Playlist geladen",
+            playlist.isSearchResult() ? null : trackUrl, bot.getJDA().getSelfUser().getEffectiveAvatarUrl());
+        eb.addField(playlist.getName(), "`" + tracks.size() + " Videos gefunden`", false);
+        event.reply(new MessageBuilder().setEmbeds(eb.build()).build()).queue();
+        queue(guild, tracks);
+        nextTrack(guild, false);
+      }
 
-          @Override
-          public void noMatches() {
-            channel
-                .sendMessage(
-                    getEmbed(guild, requester)
-                        .setAuthor(
-                            "Nichts gefunden",
-                            null,
-                            bot.getJDA().getSelfUser().getEffectiveAvatarUrl())
-                        .addField("Keine Übereinstimmung", "`" + trackUrl + "`", false)
-                        .build())
-                .queue();
-          }
+      @Override
+      public void noMatches() {
+        final Message message = new MessageBuilder().setEmbeds(getEmbed(guild, requester)
+            .setAuthor("Nichts gefunden", null, bot.getJDA().getSelfUser().getEffectiveAvatarUrl())
+            .addField("Keine Übereinstimmung", "`" + trackUrl + "`", false).build()).build();
+        event.reply(message).setEphemeral(true).queue();
+      }
 
-          @Override
-          public void loadFailed(FriendlyException exception) {
-            channel
-                .sendMessage(
-                    getEmbed(guild, requester)
-                        .setAuthor(
-                            "Fehler aufgetreten",
-                            null,
-                            bot.getJDA().getSelfUser().getEffectiveAvatarUrl())
-                        .addField("Fehlermeldung", "`" + exception.getMessage() + "`", false)
-                        .build())
-                .queue();
-          }
-        });
+      @Override
+      public void loadFailed(FriendlyException exception) {
+        final Message message = new MessageBuilder().setEmbeds(getEmbed(guild, requester)
+            .setAuthor("Fehler aufgetreten", null, bot.getJDA().getSelfUser().getEffectiveAvatarUrl())
+            .addField("Fehlermeldung", "`" + exception.getMessage() + "`", false).build()).build();
+        event.reply(message).setEphemeral(true).queue();
+      }
+    });
   }
 
   public void loadTrack(Guild guild, String trackUrl, AudioLoadResultHandler resultHandler) {

@@ -2,8 +2,9 @@ package de.nmarion.htwbot.commands.music;
 
 import de.nmarion.htwbot.commands.Command;
 import de.nmarion.htwbot.utils.DiscordUtils;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 public class RepeatCommand extends Command {
 
@@ -12,23 +13,22 @@ public class RepeatCommand extends Command {
   }
 
   @Override
-  public void execute(String[] args, Message message) {
-    final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
-    if (DiscordUtils.isConnected(message.getMember(), embedBuilder)) {
-      if (message.getGuild().getAudioManager().getConnectedChannel() == null) {
-        message
-            .getGuild()
-            .getAudioManager()
-            .openAudioConnection(message.getMember().getVoiceState().getChannel());
-      }
-      getBot()
-          .getMusicManager()
-          .setRepeat(message.getGuild(), !getBot().getMusicManager().isRepeat(message.getGuild()));
-      embedBuilder.setDescription(
-          getBot().getMusicManager().isRepeat(message.getGuild())
-              ? "Musik wird jetzt wiederholt :repeat:"
-              : "Musik spielt jetzt wieder normal");
-    }
-    message.getTextChannel().sendMessage(embedBuilder.build()).queue();
+  public void register(CommandListUpdateAction commandListUpdateAction) {
+    commandListUpdateAction.addCommands(new CommandData(getCommand(), getDescription()));
   }
+
+  @Override
+  public void execute(SlashCommandEvent event) {
+    if (DiscordUtils.isConnected(event)) {
+      if (event.getGuild().getAudioManager().getConnectedChannel() == null) {
+        event.getGuild().getAudioManager().openAudioConnection(event.getMember().getVoiceState().getChannel());
+      }
+      getBot().getMusicManager().setRepeat(event.getGuild(), !getBot().getMusicManager().isRepeat(event.getGuild()));
+      say(event, getBot().getMusicManager().isRepeat(event.getGuild()) ? "Musik wird jetzt wiederholt :repeat:"
+          : "Musik spielt jetzt wieder normal");
+
+    }
+
+  }
+
 }

@@ -2,8 +2,9 @@ package de.nmarion.htwbot.commands.music;
 
 import de.nmarion.htwbot.commands.Command;
 import de.nmarion.htwbot.utils.DiscordUtils;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 public class ClearQueueCommand extends Command {
 
@@ -12,13 +13,17 @@ public class ClearQueueCommand extends Command {
   }
 
   @Override
-  public void execute(String[] args, Message message) {
-    final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
-    if (DiscordUtils.isConnected(message.getMember(), embedBuilder)) {
-      getBot().getMusicManager().clearQueue(message.getGuild());
-      getBot().getMusicManager().stop(message.getGuild());
-      embedBuilder.setDescription("Warteschlange geleert");
-    }
-    message.getTextChannel().sendMessage(embedBuilder.build()).queue();
+  public void register(CommandListUpdateAction commandListUpdateAction) {
+    commandListUpdateAction.addCommands(new CommandData(getCommand(), getDescription()));
   }
+
+  @Override
+  public void execute(SlashCommandEvent event) {
+    if (DiscordUtils.isConnected(event)) {
+      getBot().getMusicManager().clearQueue(event.getGuild());
+      getBot().getMusicManager().stop(event.getGuild());
+      say(event, "Warteschlange geleert");
+    }
+  }
+
 }
