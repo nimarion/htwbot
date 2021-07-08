@@ -24,7 +24,7 @@ public class GuildMemberNickChangeListener extends ListenerAdapter {
       event
           .getGuild()
           .getTextChannelById(Configuration.BOT_CHANNEL)
-          .sendMessage(logBuilder.build())
+          .sendMessageEmbeds(logBuilder.build())
           .queue();
     }
   }

@@ -33,7 +33,7 @@ public class GuildMemberJoinListener extends ListenerAdapter {
       member
           .getGuild()
           .getTextChannelById(Configuration.BOT_CHANNEL)
-          .sendMessage(logBuilder.build())
+          .sendMessageEmbeds(logBuilder.build())
           .queue();
     }
   }

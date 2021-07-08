@@ -22,7 +22,7 @@ public class GuildMemberLeaveListener extends ListenerAdapter {
       event
           .getGuild()
           .getTextChannelById(Configuration.BOT_CHANNEL)
-          .sendMessage(embedBuilder.build())
+          .sendMessageEmbeds(embedBuilder.build())
           .queue();
     }
   }

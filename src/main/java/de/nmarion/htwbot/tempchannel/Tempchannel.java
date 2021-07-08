@@ -54,7 +54,7 @@ public class Tempchannel implements TempchannelEvents {
                   embedBuilder.setDescription(
                       member.getAsMention()
                           + " mit !limit kannst du das Maximale Nutzer Limit ändern");
-                  channel.sendMessage(embedBuilder.build()).queue();
+                  channel.sendMessageEmbeds(embedBuilder.build()).queue();
                 }
               });
     } else {
@@ -69,7 +69,7 @@ public class Tempchannel implements TempchannelEvents {
       final EmbedBuilder embedBuilder = new EmbedBuilder();
       embedBuilder.setColor(member.getColor());
       embedBuilder.setDescription(":arrow_right: " + member.getAsMention() + " ist beigetreten");
-      textChannel.sendMessage(embedBuilder.build()).queue();
+      textChannel.sendMessageEmbeds(embedBuilder.build()).queue();
     }
   }
 
@@ -92,7 +92,7 @@ public class Tempchannel implements TempchannelEvents {
       final EmbedBuilder embedBuilder = new EmbedBuilder();
       embedBuilder.setColor(member.getColor());
       embedBuilder.setDescription(":arrow_left: " + member.getAsMention() + " hat uns verlassen");
-      textChannel.sendMessage(embedBuilder.build()).queue();
+      textChannel.sendMessageEmbeds(embedBuilder.build()).queue();
     }
   }
 

@@ -20,7 +20,7 @@ public class CommandManager extends ListenerAdapter {
 
   public CommandManager(final HtwBot bot) {
     this.availableCommands = new HashSet<>();
-    final CommandListUpdateAction commandListUpdateAction = bot.getGuild().updateCommands();
+    final CommandListUpdateAction commandListUpdateAction = bot.getJDA().updateCommands();
     for (Class<? extends Command> cmdClass :
         new Reflections("de.nmarion.htwbot.commands").getSubTypesOf(Command.class)) {
       try {
@@ -41,6 +41,7 @@ public class CommandManager extends ListenerAdapter {
   @Override
   public void onSlashCommand(SlashCommandEvent event) {
     if (event.getMember().getRoles().size() == 0) {
+      event.reply("Command kann nicht genutzt werden").queue();
       return;
     }
     final Optional<Command> optional =

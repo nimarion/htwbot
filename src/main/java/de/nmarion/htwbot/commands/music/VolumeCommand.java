@@ -29,7 +29,7 @@ public class VolumeCommand extends Command {
     if (DiscordUtils.isConnected(event)) {
       final Guild guild = event.getGuild();
       final EmbedBuilder embedBuilder = getEmbed(event);
-      int volume = (int) event.getOption("volume").getAsLong();
+      final int volume = (int) event.getOption("volume").getAsLong();
       if (volume < 0 || volume > 100) {
         embedBuilder.addField(
             "Ungültige Lautstärke", "Wert kann nur zwischen 0 und 100 gesetzt werden.", false);

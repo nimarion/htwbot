@@ -30,11 +30,11 @@ public class LimitCommand extends Command {
       final VoiceChannel voiceChannel = event.getMember().getVoiceState().getChannel();
       if (voiceChannel.getName().toLowerCase().contains("custom")) {
         int max = (int) event.getOption("limit").getAsLong();
-        if (max >= 2) {
+        if (max >= 2 && max <= 99) {
           voiceChannel.getManager().setUserLimit(max).queue();
           embedBuilder.setDescription("Das Limit ist jetzt " + max);
         } else {
-          embedBuilder.setDescription("Das Limit muss größer als 1 sein");
+          embedBuilder.setDescription("Das Limit muss zwischen 2 und 99 liegen");
         }
       } else {
         embedBuilder.setDescription("Der Befehl funktioniert nur in **Custom** Sprachkanälen");
